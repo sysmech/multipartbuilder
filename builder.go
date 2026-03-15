@@ -212,29 +212,6 @@ func (b *Builder) WithFile(fieldName, filename string, r io.Reader, contentType 
 	return b
 }
 
-// WithFileBytes adds a file from a byte slice.
-func (b *Builder) WithFileBytes(fieldName, filename string, data []byte, required ...bool) *Builder {
-	if b.err != nil {
-		return b
-	}
-
-	if fieldName == "" {
-		b.err = emptyFieldName
-		return b
-	}
-
-	if len(data) == 0 {
-		if fieldRequired(required) {
-			b.err = fmt.Errorf("%w for %s", emptyData, fieldName)
-			return b
-		}
-		b.errors[fieldName] = emptyData
-		return b
-	}
-
-	return b.WithFile(fieldName, filename, bytes.NewReader(data), "", required...)
-}
-
 // Build finalizes the multipart request build.
 // Non-required field errors are stored in Errors() and do not fail the build.
 func (b *Builder) Build() (data *bytes.Buffer, contentType string, err error) {
