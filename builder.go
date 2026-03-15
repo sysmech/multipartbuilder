@@ -1,4 +1,3 @@
-// SPDX-License-Identifier: BSD-3-Clause
 package multipartbuilder
 
 import (
@@ -17,20 +16,20 @@ var (
 	emptyData      = errors.New("empty data")
 )
 
-type builder struct {
+type Builder struct {
 	buffer *bytes.Buffer
 	writer *multipart.Writer
 	errors map[string]error
 	err    error
 }
 
-// New creates a new multipart request builder with an in-memory buffer.
-func New() *builder {
+// New creates a new multipart request Builder with an in-memory buffer.
+func New() *Builder {
 	buffer := bytes.NewBuffer(nil)
 	writer := multipart.NewWriter(buffer)
 	errs := make(map[string]error)
 
-	return &builder{
+	return &Builder{
 		buffer: buffer,
 		writer: writer,
 		errors: errs,
@@ -38,7 +37,7 @@ func New() *builder {
 }
 
 // WithField adds a field to the multipart request.
-func (b *builder) WithField(fieldName, value string, required ...bool) *builder {
+func (b *Builder) WithField(fieldName, value string, required ...bool) *Builder {
 	if b.err != nil {
 		return b
 	}
@@ -73,7 +72,7 @@ func (b *builder) WithField(fieldName, value string, required ...bool) *builder 
 }
 
 // WithBytes adds raw byte data to the multipart request as a field.
-func (b *builder) WithBytes(fieldName string, data []byte, required ...bool) *builder {
+func (b *Builder) WithBytes(fieldName string, data []byte, required ...bool) *Builder {
 	if b.err != nil {
 		return b
 	}
@@ -119,7 +118,7 @@ func (b *builder) WithBytes(fieldName string, data []byte, required ...bool) *bu
 }
 
 // WithAnyMarshaled marshals the given object to JSON and adds it as a field.
-func (b *builder) WithAnyMarshaled(fieldName string, value interface{}, required ...bool) *builder {
+func (b *Builder) WithAnyMarshaled(fieldName string, value interface{}, required ...bool) *Builder {
 	if b.err != nil {
 		return b
 	}
@@ -145,7 +144,7 @@ func (b *builder) WithAnyMarshaled(fieldName string, value interface{}, required
 
 // WithFile adds a file to the multipart request from an io.Reader.
 // Optionally, a custom Content-Type can be set.
-func (b *builder) WithFile(fieldName, filename string, r io.Reader, contentType string, required ...bool) *builder {
+func (b *Builder) WithFile(fieldName, filename string, r io.Reader, contentType string, required ...bool) *Builder {
 	if b.err != nil {
 		return b
 	}
@@ -214,7 +213,7 @@ func (b *builder) WithFile(fieldName, filename string, r io.Reader, contentType 
 }
 
 // WithFileBytes adds a file from a byte slice.
-func (b *builder) WithFileBytes(fieldName, filename string, data []byte, required ...bool) *builder {
+func (b *Builder) WithFileBytes(fieldName, filename string, data []byte, required ...bool) *Builder {
 	if b.err != nil {
 		return b
 	}
@@ -238,7 +237,7 @@ func (b *builder) WithFileBytes(fieldName, filename string, data []byte, require
 
 // Build finalizes the multipart request build.
 // Non-required field errors are stored in Errors() and do not fail the build.
-func (b *builder) Build() (data *bytes.Buffer, contentType string, err error) {
+func (b *Builder) Build() (data *bytes.Buffer, contentType string, err error) {
 	if b.err != nil {
 		return nil, "", b.err
 	}
@@ -251,12 +250,12 @@ func (b *builder) Build() (data *bytes.Buffer, contentType string, err error) {
 }
 
 // HasErrors returns true if non-required fields errors were stored
-func (b *builder) HasErrors() bool {
+func (b *Builder) HasErrors() bool {
 	return len(b.errors) > 0
 }
 
 // Errors returns map[string]error with ignored errors by field names.
-func (b *builder) Errors() map[string]error {
+func (b *Builder) Errors() map[string]error {
 	out := make(map[string]error, len(b.errors))
 	for k, v := range b.errors {
 		out[k] = v
@@ -264,8 +263,8 @@ func (b *builder) Errors() map[string]error {
 	return out
 }
 
-// Reset clears the builder state, buffer and errors map allowing it to be reused.
-func (b *builder) Reset() {
+// Reset clears the Builder state, buffer and errors map allowing it to be reused.
+func (b *Builder) Reset() {
 	b.buffer.Reset()
 	b.writer = multipart.NewWriter(b.buffer)
 	b.errors = make(map[string]error)
