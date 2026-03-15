@@ -5,5 +5,3 @@
 ```shell
 go get github.com/sysmech/multipartbuilder
 ```
-
-Documentation is available on pkg.go.dev: https://pkg.go.dev/github.com/sysmech/multipartbuilder
